@@ -1,0 +1,87 @@
+{
+  "kind": "build_request",
+  "title": "Refresh Collabsy website theme with an attractive, subtle pastel palette",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement a new attractive-but-subtle pastel color theme across the entire site (marketing pages, auth pages, dashboards, header/footer) by updating the global design tokens (CSS variables) and ensuring all existing Tailwind/shadcn styles inherit the new palette consistently in both light and dark modes (avoid loud/neon colors and avoid a blue/purple-forward theme).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "change the colors of the website and make it more attractive"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Light mode uses a cohesive pastel palette (primary/secondary/accent/muted/background/border/ring/chart tokens) with good readability on all pages.",
+        "Dark mode uses a muted, premium-feeling counterpart palette (no high-saturation neon), with clear contrast for text, buttons, and cards.",
+        "No page contains jarring default grayscale tokens (e.g., primary=black/white) where primary/accent intent is expected.",
+        "Theme changes apply consistently across Header, Footer, marketing pages (Home/For Brands/For Creators), Login, Sign Up, Brand Dashboard, and Creator Dashboard."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Resolve theme-token inconsistency by ensuring the active global stylesheet(s) define the same updated theme variables so the app does not render different palettes depending on which CSS file is loaded (the project currently has overlapping variable definitions in both `frontend/src/index.css` and `frontend/index.css`).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "any of your choice but it must look attractive and subtle"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After the update, the same palette is used regardless of whether styles are sourced from `frontend/src/index.css` or `frontend/index.css` (no mismatched radii/colors between environments).",
+        "Primary buttons, outline buttons, cards, borders, and muted text colors look consistent across the app (no sudden shifts when navigating between routes)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Tune marketing-specific utility classes to match the new pastel theme (e.g., CTA gradient section, primary/secondary CTA styles, marketing cards hover states) so the marketing pages feel more polished while remaining subtle.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "update"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Marketing CTA sections (e.g., `.marketing-cta-section`, `.marketing-cta-primary`, `.marketing-cta-secondary`, `.marketing-card`) visually match the new palette and maintain a subtle, premium look.",
+        "Hover/focus states for CTAs and cards remain accessible and visibly distinct without looking harsh or overly saturated.",
+        "No user-facing text is changed as part of the theme refresh (English remains as-is)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Frontend immutable paths must not be edited: `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, and anything under `frontend/src/components/ui`.",
+    "Do not introduce new frameworks; keep React + TypeScript + Tailwind + React Query + existing shadcn composition patterns.",
+    "Backend code and data models must not be changed for this request."
+  ],
+  "nonGoals": [
+    "Do not add new product features, pages, or flows (this request is only a visual theme refresh).",
+    "Do not change authentication behavior, onboarding logic, payments, or collaboration features.",
+    "Do not regenerate or edit existing marketing images as part of this request."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [
+      "Use an attractive, subtle pastel theme for the website color palette."
+    ],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-07T08:11:09.617Z",
+  "summary": "The diff clearly updates global CSS design tokens to a new pastel OKLCH palette (light + dark) and duplicates the same token set in both `frontend/src/index.css` and `frontend/index.css`, addressing the theme-token inconsistency. It also begins tuning marketing utility classes (e.g., `.marketing-card` hover/border). However, the diff also modifies meta/documentation-like files describing extensive page redesigns and new behaviors that are out of scope for a theme-only refresh.",
+  "missing_requirements": [],
+  "hallucinated_features": [
+    {
+      "description": "Large-scale marketing page redesigns and new/updated assets/components described (e.g., Collabstr-inspired structure, new collage/illustrations/avatars, new SocialProofStrip/HowItWorks components).",
+      "reason": "The BuildRequest explicitly limits scope to a visual theme refresh (no new pages/flows/features). The diff includes a modified summary file asserting substantial UI/page rework beyond global theming; these changes are not requested and are not evidenced as actual code diffs (only as descriptions).",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "New/changed authentication/onboarding and dashboard behaviors described (multi-step registration, profile picture upload, role-specific forms, automatic dashboard redirection, advanced filtering, collaboration requests, UPI payment gateway, INR/USD formatting changes).",
+      "reason": "These are explicitly non-goals (no auth/onboarding/payments/collaboration changes; no new product features). Even if only described, they are introduced as part of the change summary without being requested.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Project metadata/state updates unrelated to the theme refresh (project_state version/feature inventory changes).",
+      "reason": "Not requested by any requirement; BuildRequest focuses on CSS token/theme updates and marketing utility class tuning.",
+      "evidence": [
+        "project_state.json"
+      ]
+    }
+  ],
+  "confidence": 0.7,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/src/index.css",
+    "project_state.json"
+  ]
+}

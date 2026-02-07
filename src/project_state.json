@@ -1,0 +1,314 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 24,
+  "summary": "Collabsy is an AI-positioned influencer marketing platform built on the Internet Computer (Motoko canister backend + React frontend). It supports Internet Identity login, role-based onboarding for brands and creators, creator discovery with filtering, brand/creator dashboards with campaign stats, and collaboration request creation. The backend also includes payment primitives (transactions and Stripe checkout session support) and blob storage integration for creator profile pictures.",
+  "architectural_notes": [
+    "Monorepo-style split between a Motoko backend canister (business logic, auth, storage, payments) and a React frontend (TanStack Router, React Query).",
+    "Frontend uses TanStack React Query for all backend reads/writes via typed hooks; cache invalidation is used after mutations.",
+    "Frontend authentication is handled via a React context provider wrapping DFINITY AuthClient (Internet Identity), persisting delegations across reloads.",
+    "Backend uses an AccessControl module with a first-time initialization flow; a secret token can promote the first caller to admin (admin token sourced from an environment variable).",
+    "Motoko code uses mixins (include MixinAuthorization / MixinStorage) to compose cross-cutting concerns into the main actor.",
+    "Backend state is primarily held in in-canister Map structures keyed by Principal and by numeric IDs (collaboration requests, payment transactions).",
+    "An explicit migration module exists to evolve CreatorProfile data (adds social links + profile picture), and the actor is compiled with a migration runner.",
+    "Stripe integration is implemented using IC HTTP outcalls with a response transform function that strips headers.",
+    "Blob storage uses the IC primitive storage blob lifecycle (live/dead blobs) plus an authorization list obtained from a cashier canister.",
+    "A reusable build-template directory was added, containing Dockerfile, workspace config, deployment scripts (icp.yaml/deploy.sh), and build utilities (image prune/resize scripts) to standardize project packaging and deployment."
+  ],
+  "known_issues": [
+    "AccessControl.hasPermission() calls getUserRole(), which traps when a non-anonymous caller has not been initialized/registered; many query/mutation endpoints will therefore trap for first-time authenticated users unless _initializeAccessControlWithSecret is successfully called.",
+    "Frontend useActor() always calls _initializeAccessControlWithSecret(adminToken) after creating the authenticated actor; if the backend env var CAFFEINE_ADMIN_TOKEN is not set, initialization traps and can break authenticated flows.",
+    "Admin token bootstrap is passed via URL hash parameter (caffeineAdminToken) and stored in sessionStorage; while the hash is cleared, this is still sensitive and can be exfiltrated by XSS or browser extensions.",
+    "BrandDashboardPage shows a hard-coded UPI QR image and UPI ID; there is no backend verification, transaction creation, or reconciliation wired up in the UI.",
+    "CreatorDashboardPage currently shows 'No pending requests' and does not query collaboration requests; collaboration request listing/accept/reject flows are not implemented in the frontend.",
+    "Stripe.buildCheckoutSessionBody() adds allowed countries using a fixed index [0] for every entry, which is likely incorrect for multiple allowed countries.",
+    "backend/blob-storage/Storage.mo environment variable name is spelled \"CAFFFEINE_STORAGE_CASHIER_PRINCIPAL\" (typo); misconfiguration is likely if deployment expects \"CAFFEINE_...\".",
+    "Some React Query invalidation keys are inconsistent (e.g., creator update invalidates only ['creatorProfile'] but not ['creatorDashboardStats']); UI may show stale stats.",
+    "There are two CSS files shown (frontend/src/index.css and frontend/index.css) with overlapping CSS variable definitions; depending on build setup, this may cause theme inconsistencies."
+  ],
+  "isFixRequest": false,
+  "generatedImages": [
+    {
+      "filename": "frontend/public/assets/generated/collabsy-hero-collage.dim_1600x900.png",
+      "description": "Generated hero collage image for marketing pages",
+      "targetWidth": 1600,
+      "targetHeight": 900
+    },
+    {
+      "filename": "frontend/public/assets/generated/collabsy-wordmark.dim_600x160.png",
+      "description": "Generated Collabsy wordmark image",
+      "targetWidth": 600,
+      "targetHeight": 160
+    },
+    {
+      "filename": "frontend/public/assets/generated/creator-avatar-set-1.dim_768x256.png",
+      "description": "Generated creator avatar set image",
+      "targetWidth": 768,
+      "targetHeight": 256
+    },
+    {
+      "filename": "frontend/public/assets/generated/marketplace-ui-illustration.dim_1200x750.png",
+      "description": "Generated marketplace UI illustration image",
+      "targetWidth": 1200,
+      "targetHeight": 750
+    }
+  ],
+  "existing_features": [
+    {
+      "id": "IF-1",
+      "title": "Marketing landing pages (Home / For Brands / For Creators)",
+      "synonyms": [
+        "Landing pages",
+        "Marketing pages"
+      ],
+      "description": "Public-facing pages describing the platform value proposition and feature sets for brands and creators, with CTAs leading to signup.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-2",
+      "title": "Client-side routing with shared layout",
+      "synonyms": [
+        "TanStack Router setup",
+        "Layout with header/footer"
+      ],
+      "description": "TanStack Router route tree for all pages (home, for-brands, for-creators, signup, login, brand-dashboard, creator-dashboard) wrapped in a Layout component with Header and Footer.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-3",
+      "title": "Dark theme UI foundation and Tailwind styling",
+      "synonyms": [
+        "ThemeProvider",
+        "Tailwind UI theme"
+      ],
+      "description": "ThemeProvider configured to default to dark mode, Tailwind with OKLCH CSS variables, and utility animations used across the landing experience.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-4",
+      "title": "Internet Identity authentication integration",
+      "synonyms": [
+        "II login",
+        "DFINITY AuthClient"
+      ],
+      "description": "InternetIdentityProvider manages AuthClient initialization, login/logout, delegation persistence, and exposes identity + login status via a hook.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-5",
+      "title": "Backend actor creation per identity with access control initialization",
+      "synonyms": [
+        "useActor hook",
+        "Actor bootstrap"
+      ],
+      "description": "Frontend creates an anonymous or authenticated canister actor depending on identity; when authenticated, it initializes backend access control using a secret token from the URL hash/session and refreshes dependent queries on actor changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-6",
+      "title": "Role-based user onboarding (brand and creator registration)",
+      "synonyms": [
+        "Signup flows",
+        "registerBrand/registerCreator"
+      ],
+      "description": "Signup supports selecting user type and submitting role-specific forms; backend persists userProfiles plus brandProfiles or creatorProfiles and prevents double registration.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-7",
+      "title": "Creator profile picture upload via ExternalBlob with progress",
+      "synonyms": [
+        "Blob upload",
+        "Profile image"
+      ],
+      "description": "Creator registration and profile editing support uploading an optional profile image as an ExternalBlob with client-side progress reporting and displaying the image via getDirectURL().",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-8",
+      "title": "Creator profile management (view and update)",
+      "synonyms": [
+        "Creator dashboard profile edit",
+        "updateCreatorProfile"
+      ],
+      "description": "Creators can fetch their profile and update core fields (name, phone, follower stats, pricing, category, social links, profile picture). Backend preserves immutable fields such as email and createdAt.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-9",
+      "title": "Brand dashboard statistics aggregation",
+      "synonyms": [
+        "Brand KPIs",
+        "Brand dashboard stats"
+      ],
+      "description": "Backend computes brand dashboard stats from collaboration requests and completed payment transactions (total campaigns, completed, spend, active, pending); frontend displays these metrics.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-10",
+      "title": "Creator dashboard statistics aggregation",
+      "synonyms": [
+        "Creator KPIs",
+        "Earnings dashboard"
+      ],
+      "description": "Backend computes creator dashboard stats from collaboration requests and completed payment transactions (campaign counts, active/pending, and total earnings); frontend displays these metrics.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Creator discovery and filtering for brands",
+      "synonyms": [
+        "Browse creators",
+        "Marketplace search"
+      ],
+      "description": "Brands can browse creator profiles with filters for platform presence, total follower range, average price range, and category. Frontend provides a filter form and renders creator cards with contact info and social links.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "Collaboration request creation and status model",
+      "synonyms": [
+        "Campaign requests",
+        "createCollaborationRequest"
+      ],
+      "description": "Brands can create collaboration requests for a creator with campaign details; backend stores them with status (pending/accepted/rejected/completed) and supports status updates and secure retrieval by participants/admin.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Payment transaction primitives and UPI payment display (UI)",
+      "synonyms": [
+        "Transactions model",
+        "UPI gateway modal"
+      ],
+      "description": "Backend defines payment transactions (create/update/get) with sender/receiver/amount/status; frontend currently displays a UPI QR and instructions after sending a collaboration request (without calling transaction APIs).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Stripe checkout session integration (backend)",
+      "synonyms": [
+        "Stripe HTTP outcalls",
+        "createCheckoutSession/getSessionStatus"
+      ],
+      "description": "Backend supports configuring Stripe (admin-only), creating checkout sessions for authenticated users, and polling session status via IC HTTP outcalls with a response transform.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Blob storage gateway authorization and garbage collection utilities",
+      "synonyms": [
+        "Caffeine storage mixin",
+        "Storage GC"
+      ],
+      "description": "Backend includes storage mixin endpoints for updating authorized gateway principals, listing dead blobs, confirming deletion (with forced GC trigger), and cashier refill operations for cycles management.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-16",
+      "title": "Camera and QR scanning hooks",
+      "synonyms": [
+        "useCamera",
+        "useQRScanner"
+      ],
+      "description": "Reusable frontend hooks for starting/stopping/switching the device camera, capturing photos, and scanning QR codes using jsQR loaded dynamically from a CDN.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-17",
+      "title": "Access control and admin role management",
+      "synonyms": [
+        "Authorization mixin",
+        "Role assignment"
+      ],
+      "description": "Backend access control supports initialization via an admin token, querying caller role/admin status, and admin-only assignment of user roles.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-18",
+      "title": "Build/deploy template scaffolding for IC (React + Motoko)",
+      "synonyms": [
+        "build-template",
+        "deployment scripts",
+        "icp.yaml/deploy.sh"
+      ],
+      "description": "Repository now includes a reusable build template with Dockerfile, ICP deployment configuration (icp.yaml), deploy script, workspace/package configuration, and helper scripts (e.g., prune/resize images) to standardize building and deploying the Motoko backend + React frontend.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-19",
+      "title": "Shadcn UI component library baseline added",
+      "synonyms": [
+        "shadcn-ui",
+        "UI component primitives"
+      ],
+      "description": "Frontend now includes a large set of shadcn/ui component primitives (accordion, dialog, dropdown, table, tabs, etc.) and supporting utilities to accelerate consistent UI development.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-20",
+      "title": "Generated marketing image assets added",
+      "synonyms": [
+        "generated assets",
+        "marketing graphics"
+      ],
+      "description": "New generated PNG assets added under frontend/public/assets/generated for use in marketing/landing pages (hero collage, wordmark, avatar set, marketplace illustration).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-new-attractive-but-subtle-pastel-color-theme-across-the-entire-site-marketing-pages-auth-pages-dashboards-header-footer-by-updating-the-global-design-tokens-css-variables-and-ensuring-all-existing-tailwind-shadcn-styles-inherit-the-new-palette-consistently-in-both-light-and-dark-modes-avoid-loud-neon-colors-and-avoid-a-blue-purple-forward-theme",
+      "title": "Implement a new attractive-but-subtle pastel color theme across the entire site (marketing pages, auth pages, dashboards, header/footer) by updating the global design tokens (CSS variables) and ensuring all existing Tailwind/shadcn styles inherit the new palette consistently in both light and dark modes (avoid loud/neon colors and avoid a blue/purple-forward theme).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-resolve-theme-token-inconsistency-by-ensuring-the-active-global-stylesheet-s-define-the-same-updated-theme-variables-so-the-app-does-not-render-different-palettes-depending-on-which-css-file-is-loaded-the-project-currently-has-overlapping-variable-definitions-in-both-frontend-src-index-css-and-frontend-index-css",
+      "title": "Resolve theme-token inconsistency by ensuring the active global stylesheet(s) define the same updated theme variables so the app does not render different palettes depending on which CSS file is loaded (the project currently has overlapping variable definitions in both `frontend/src/index.css` and `frontend/index.css`).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-tune-marketing-specific-utility-classes-to-match-the-new-pastel-theme-e-g-cta-gradient-section-primary-secondary-cta-styles-marketing-cards-hover-states-so-the-marketing-pages-feel-more-polished-while-remaining-subtle",
+      "title": "Tune marketing-specific utility classes to match the new pastel theme (e.g., CTA gradient section, primary/secondary CTA styles, marketing cards hover states) so the marketing pages feel more polished while remaining subtle.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Update website color theme to be more attractive and subtle (choose a soft/pastel palette)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Collabsy",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

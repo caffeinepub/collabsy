@@ -1,0 +1,65 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Collabsy pastel theme refresh (global tokens + marketing polish)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Replace the global CSS variable palette with a cohesive, subtle pastel theme that propagates through Tailwind/shadcn in light and dark modes (not blue/purple-forward).",
+      "acceptanceCriteria": [
+        "Light mode uses a cohesive pastel palette (primary/secondary/accent/muted/background/border/ring/chart tokens) with good readability on all pages.",
+        "Dark mode uses a muted, premium-feeling counterpart palette (no high-saturation neon), with clear contrast for text, buttons, and cards.",
+        "No page contains jarring default grayscale tokens (e.g., primary=black/white) where primary/accent intent is expected.",
+        "Theme changes apply consistently across Header, Footer, marketing pages (Home/For Brands/For Creators), Login, Sign Up, Brand Dashboard, and Creator Dashboard."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Update global design tokens (CSS variables) in :root and .dark to a new subtle pastel palette (including primary/secondary/accent/muted/background/border/ring/chart/sidebar tokens) and ensure base styles continue to inherit these tokens consistently across the app."
+        },
+        {
+          "path": "frontend/index.css",
+          "operation": "modify",
+          "description": "Apply the same updated pastel design tokens (CSS variables) used in frontend/src/index.css so light/dark palette values match across build environments."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Eliminate theme-token inconsistencies caused by overlapping variable definitions across frontend/src/index.css and frontend/index.css.",
+      "acceptanceCriteria": [
+        "After the update, the same palette is used regardless of whether styles are sourced from frontend/src/index.css or frontend/index.css (no mismatched radii/colors between environments).",
+        "Primary buttons, outline buttons, cards, borders, and muted text colors look consistent across the app (no sudden shifts when navigating between routes)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Standardize the canonical token set and keep variable names/coverage aligned with Tailwind/shadcn expectations so all semantic colors and radii are defined once and used consistently."
+        },
+        {
+          "path": "frontend/index.css",
+          "operation": "modify",
+          "description": "Resolve differences vs frontend/src/index.css (e.g., radius and dark-mode primary/foreground) by making the variable definitions identical, preventing palette shifts depending on which stylesheet is loaded."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Refine marketing-only utility classes (CTA section gradient, CTA buttons, marketing cards/hover states) to feel polished and aligned with the new pastel theme without changing any user-facing text.",
+      "acceptanceCriteria": [
+        "Marketing CTA sections (e.g., .marketing-cta-section, .marketing-cta-primary, .marketing-cta-secondary, .marketing-card) visually match the new palette and maintain a subtle, premium look.",
+        "Hover/focus states for CTAs and cards remain accessible and visibly distinct without looking harsh or overly saturated.",
+        "No user-facing text is changed as part of the theme refresh (English remains as-is)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Tune marketing utility classes (e.g., .marketing-cta-section gradient stops/opacities, .marketing-cta-primary/.marketing-cta-secondary hover/focus styling, .marketing-card border/shadow/hover) to better leverage the updated pastel tokens and improve subtlety/contrast."
+        }
+      ]
+    }
+  ]
+}

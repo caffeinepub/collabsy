@@ -1,0 +1,79 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-a-new-attractive-but-subtle-pastel-color-theme-across-the-entire-site-marketing-pages-auth-pages-dashboards-header-footer-by-updating-the-global-design-tokens-css-variables-and-ensuring-all-existing-tailwind-shadcn-styles-inherit-the-new-palette-consistently-in-both-light-and-dark-modes-avoid-loud-neon-colors-and-avoid-a-blue-purple-forward-theme",
+      "featureTitle": "Implement a new attractive-but-subtle pastel color theme across the entire site (marketing pages, auth pages, dashboards, header/footer) by updating the global design tokens (CSS variables) and ensuring all existing Tailwind/shadcn styles inherit the new palette consistently in both light and dark modes (avoid loud/neon colors and avoid a blue/purple-forward theme).",
+      "files": [
+        "frontend/index.css",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "blob-storage@4.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-resolve-theme-token-inconsistency-by-ensuring-the-active-global-stylesheet-s-define-the-same-updated-theme-variables-so-the-app-does-not-render-different-palettes-depending-on-which-css-file-is-loaded-the-project-currently-has-overlapping-variable-definitions-in-both-frontend-src-index-css-and-frontend-index-css",
+      "featureTitle": "Resolve theme-token inconsistency by ensuring the active global stylesheet(s) define the same updated theme variables so the app does not render different palettes depending on which CSS file is loaded (the project currently has overlapping variable definitions in both `frontend/src/index.css` and `frontend/index.css`).",
+      "files": [
+        "frontend/index.css",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "blob-storage@4.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-tune-marketing-specific-utility-classes-to-match-the-new-pastel-theme-e-g-cta-gradient-section-primary-secondary-cta-styles-marketing-cards-hover-states-so-the-marketing-pages-feel-more-polished-while-remaining-subtle",
+      "featureTitle": "Tune marketing-specific utility classes to match the new pastel theme (e.g., CTA gradient section, primary/secondary CTA styles, marketing cards hover states) so the marketing pages feel more polished while remaining subtle.",
+      "files": [
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@3.0.0",
+        "blob-storage@4.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
